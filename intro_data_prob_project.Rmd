@@ -1,0 +1,105 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+```
+
+### Load data
+
+```{r load-data}
+load("brfss2013.RData")
+data <- brfss2013
+```
+
+
+
+* * *
+
+## Part 1: Data
+The Behavioral Risk Factor Surveillance System (BRFSS) is the nation's premier system of health-related telephone surveys that collect state data about U.S. residents regarding their health-related risk behaviors, chronic health conditions, and use of preventive services. Established in 1984 with 15 states, BRFSS now collects data in all 50 states as well as the District of Columbia and three U.S. territories. BRFSS completes more than 400,000 adult interviews each year, making it the largest continuously conducted health survey system in the world.
+
+A case could be made for these data to be generalizable across the US population writ large as the survey technique appears to not preclude any subset of the American Population.
+
+Using this data alone, determining causality would be problematic.  However, exploratory data analysis may lead researchers to conduct further analysis of questions developed through initial analysis of the data. 
+
+One of the most significant issues with conducting phone surveys is that there is no way for the researcher or surveyor to verify the accuracy of the survey responses.  One must assume that survey takers provide factual information and that assumption likely does not apply across all 500K surveys in 2013.
+
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:**
+Does survey reported income impact survey reported general health?
+
+**Research quesion 2:**
+Is there an observable difference in select unhealthy behaviors between veteran and non-veteran survey takers?
+
+**Research quesion 3:**
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+**Research quesion 1:**
+
+```{r}
+gen_data <- filter(brfss2013, !is.na(income2), !is.na(sex)) 
+
+plot4 <- ggplot(gen_data, aes(x= genhlth, fill = income2)) + geom_bar(position ="dodge") + 
+  facet_wrap(~sex, ncol = 2)+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+
+plot4
+```
+
+
+**Research quesion 2:**
+
+```{r}
+vet_data <- data %>%
+filter(veteran3 == "Yes", !is.na(sex))
+
+non_vet <- data %>%
+filter(veteran3 == "No", !is.na(sex))
+
+plot <- ggplot(vet_data, aes(sleptim1)) + geom_bar(aes(fill=sex))+ xlim(-1, 20)
+  plot
+
+plota <- ggplot(non_vet, aes(sleptim1)) + geom_bar(aes(fill=sex))+ xlim(-1, 20)
+  plota
+  
+plot1 <- ggplot(vet_data, aes(avedrnk2)) + geom_bar(aes(fill=sex))+ xlim(-1, 20)
+  plot1
+  
+plot1a <- ggplot(non_vet, aes(avedrnk2)) + geom_bar(aes(fill=sex))+ xlim(-1, 20)
+  plot1a
+
+plot2 <- ggplot(vet_data, aes(drnk3ge5)) + geom_bar(aes(fill=sex))+ xlim(-1, 20)
+  plot2    
+
+plot3 <- ggplot(vet_data, aes(X_bmi5cat)) + geom_bar(aes(fill=sex))+ theme(axis.text.x=element_text(angle=45,hjust=1,vjust=0.5))
+  plot3 
+  
+plot_grid(plot, plota)
+```
+
+
+**Research quesion 3:**
+
+```{r}
+
+```
+
